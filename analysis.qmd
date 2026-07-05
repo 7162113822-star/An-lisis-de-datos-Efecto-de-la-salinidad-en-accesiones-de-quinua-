@@ -1,6 +1,6 @@
 ---
 title: "Análisis de datos sobre el efecto de la salinidad en accesiones de quinua"
-author: "Grupo-1"
+author: "Jhonatan Dali Fernandez Rojas, Kevin Orlando Gomez Cruz, Isaac Gilardy Santillan Gil, Britney Emeli Tapia Chavarry, Jhoneyda Emelis Vera Campos, Jhener Ivan Visalot Chappa"
 format:
   html:
     toc: true
@@ -313,10 +313,4 @@ nacl
 
 
 ```
-
-
-
-
-# References
-
 
