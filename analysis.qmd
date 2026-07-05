@@ -1,0 +1,322 @@
+---
+title: "Análisis de datos sobre el efecto de la salinidad en accesiones de quinua"
+author: "Grupo-1"
+format:
+  html:
+    toc: true
+    toc-expand: true
+    toc-depth: 4
+    toc-location: left
+    number-sections: true
+    self-contained: true
+    code-fold: true
+editor_options: 
+  chunk_output_type: console
+execute: 
+  warning: false
+  message: false
+  echo: true
+---
+
+# Project Setup
+
+```{r}
+#| label: setup
+
+source('https://inkaverse.com/setup.r')
+```
+
+# Data import
+
+```{r}
+library(readxl)
+fb <- read_excel("C:/Users/hp/Downloads/examen_3u.xlsx")
+View(fb)
+```
+
+
+
+```{r}
+# Install packages and dependencies
+
+library(GerminaR)
+library(ellmer)
+```
+
+# ANOVA
+
+```{r}
+# germination analysis 
+
+gsm <- ger_summary(factors = c("accesion", "nacl")
+                   , SeedN = "seed"
+                   , evalName = "G_"
+                   , cumulative = FALSE
+                   , data = fb
+                   )
+
+view(gsm)
+```
+
+# Diseño experimental 
+
+Diseño de bloques completamente alazar (DBCA)
+
+
+$$ y = u +accesion+nacl+(accesion*nacl)+bloque+e$$
+# anova 
+
+```{r}
+
+## Germination Percentage (GRP)
+
+# analysis of variance
+
+av <- aov(grp ~ accesion*nacl + block, data = gsm)
+
+anova(av)
+
+# mean comparison test
+
+mc_grp <- ger_testcomp(aov = av
+                       , comp = c("accesion", "nacl")
+                       , type = "snk"
+                       )
+
+# data result
+
+mc_grp$table %>% 
+   kable(caption = "Germination percentage mean comparision")
+```
+
+
+```{r}
+
+# bar graphics for germination percentage
+
+library(dplyr)
+
+# Ordenar los niveles de la accesión
+mc_grp$table <- mc_grp$table %>%
+  mutate(accesion = factor(accesion,
+                           levels = paste0("a", 1:21)))
+
+grp <- mc_grp$table %>%
+  fplot(
+    data = .,
+    type = "bar",
+    x = "accesion",
+    y = "grp",
+    group = "nacl",
+    ylimits = c(0, 130, 30),
+    ylab = "Germinación ('%')",
+    xlab = "Accesiones",
+    glab = "NaCl",
+    error = "ste",
+    sig = "sig",
+    color = TRUE
+  )
+
+grp
+```
+
+# Tiempo medio de germinación
+
+```{r}
+
+## Mean Germination Time (MGT)
+
+# analysis of variance
+
+av2 <- aov(mgt ~ accesion*nacl + block, data = gsm)
+
+anova(av2)
+
+# mean comparison test
+
+mc_mgt <- ger_testcomp(aov = av2
+                       , comp = c("accesion", "nacl")
+                       , type = "snk")
+
+
+```
+
+
+```{r}
+
+library(dplyr)
+
+# Ordenar las accesiones
+mc_mgt$table <- mc_mgt$table %>%
+  mutate(accesion = factor(accesion,
+                           levels = paste0("a", 1:21)))
+
+mgt <- mc_mgt$table %>%
+  fplot(
+    data = .,
+    type = "bar",
+    x = "accesion",
+    y = "mgt",
+    group = "nacl",
+    ylimits = c(0, 10, 1),
+    ylab = "Tiempo medio de germinación (días)",
+    xlab = "Accesiones",
+    glab = "NaCl (MPa)",
+    sig = "sig",
+    error = "ste",
+    color = TRUE
+  )
+
+mgt
+```
+
+
+# Velocidad de germinación
+
+```{r}
+## Germination Speed Parameter (GSP)
+
+# analysis of variance
+
+av3 <- aov(gsp ~ accesion*nacl + block, data = gsm)
+
+anova(av3)
+
+# mean comparison test
+
+mc_gsp <- ger_testcomp(aov = av3
+                       , comp = c("accesion", "nacl")
+                       , type = "snk")
+
+```
+
+```{r}
+library(dplyr)
+
+# Ordenar las accesiones
+mc_gsp$table <- mc_gsp$table %>%
+  mutate(accesion = factor(accesion,
+                           levels = paste0("a", 1:21)))
+
+gsp <- mc_gsp$table %>%
+  fplot(
+    data = .,
+    type = "bar",
+    x = "accesion",
+    y = "gsp",
+    group = "nacl",
+    ylimits = c(0, 60, 5),
+    ylab = "Velocidad de germinación ('1/día')",
+    xlab = "Accesiones",
+    glab = "NaCl (MPa)",
+    sig = "sig",
+    error = "ste",
+    color = TRUE
+  )
+
+gsp
+```
+
+
+# Coeficiente de uniformidad
+
+```{r}
+## Uniformity Coefficient (UNC)
+
+# analysis of variance
+
+av4 <- aov(unc ~ accesion*nacl + block, data = gsm)
+
+anova(av4)
+
+# mean comparison test
+
+mc_unc <- ger_testcomp(aov = av4
+                       , comp = c("accesion", "nacl")
+                       , type = "snk")
+
+```
+
+
+```{r}
+library(dplyr)
+
+# Ordenar las accesiones
+mc_unc$table <- mc_unc$table %>%
+  mutate(accesion = factor(accesion,
+                           levels = paste0("a", 1:21)))
+
+unc <- mc_unc$table %>%
+  fplot(
+    data = .,
+    type = "bar",
+    x = "accesion",
+    y = "unc",
+    group = "nacl",
+    ylimits = c(0, 3, 0.5),
+    ylab = "Coeficiente de Uniformidad",
+    xlab = "Accesiones",
+    glab = "NaCl (MPa)",
+    sig = "sig",
+    error = "ste",
+    color = TRUE
+  )
+
+unc
+```
+
+# Germinación acumulada de germinación
+
+
+```{r}
+# Convertir caracteres numericos
+fb[, grep("^G_", names(fb))] <- lapply(
+  fb[, grep("^G_", names(fb))],
+  function(x) as.numeric(as.character(x))
+)
+```
+
+
+```{r}
+
+# data frame with percentage or relative germination in time by NaCl
+
+git <- ger_intime(Factor = "nacl"
+                  , SeedN = "seed"
+                  , evalName = "G_"
+                  , method = "percentage"
+                  , data = as.data.frame(fb)
+                  )
+
+```
+
+
+
+```{r}
+
+# graphic germination in time by NaCl
+
+nacl <- git %>% 
+   fplot(data = .
+        , type = "line"
+        , x = "evaluation"
+        , y = "mean"
+        , group = "nacl"
+        , ylimits = c(0, 120, 10)
+        , ylab = "Germinación Acumulada"
+        , xlab = "Días"
+        , glab = "Nacl (MPa)"
+        , color = T
+        , error = "ste"
+        )
+nacl
+
+
+```
+
+
+
+
+# References
+
+
